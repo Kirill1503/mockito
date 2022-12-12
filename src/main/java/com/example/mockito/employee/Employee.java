@@ -1,19 +1,13 @@
 package com.example.mockito.employee;
 
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Objects;
 
 public class Employee {
-    @JsonProperty("firstname")
     private final String name;
-    @JsonProperty("lastname")
     private final String surname;
-    @JsonProperty("departmentId")
     private final int department;
-
     private final double salary;
+
 
     public Employee(String name, String surname, int department, double salary) {
         this.name = name;
@@ -41,13 +35,14 @@ public class Employee {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Employee employee)) return false;
-        return getDepartment() == employee.getDepartment() && Double.compare(employee.getSalary(), getSalary()) == 0 && Objects.equals(getName(), employee.getName()) && Objects.equals(getSurname(), employee.getSurname());
+        if (o == null || getClass() != o.getClass()) return false;
+        Employee employee = (Employee) o;
+        return Double.compare(employee.salary, salary) == 0 && Objects.equals(name, employee.name) && Objects.equals(surname, employee.surname) && Objects.equals(department, employee.department);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getName(), getSurname(), getDepartment(), getSalary());
+        return Objects.hash(name, surname, department, salary);
     }
 
     @Override

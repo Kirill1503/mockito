@@ -14,16 +14,24 @@ public class EmployeeService {
 
     private static final int LIMIT = 10;
 
-    private final List<Employee> employees;
+    private final List<Employee> employees = new ArrayList<>();
 
-    public EmployeeService() {
-        this.employees = new ArrayList<>();
+    private final ValidatorService validatorService;
+
+    public EmployeeService(ValidatorService validatorService) {
+        this.validatorService = validatorService;
     }
 
-
-
-    public Employee addEmployee(String name, String surname, int department, double salary) {
-        Employee employee = new Employee(name, surname, department, salary);
+    public Employee addEmployee(String name,
+                                String surname,
+                                int department,
+                                double salary) {
+        Employee employee = new Employee(
+                validatorService.validateName(name),
+                validatorService.validateSurname(surname),
+                department,
+                salary
+        );
         if (employees.contains(employee)) {
             throw new EmployeeAlreadyAddedException();
         }
@@ -35,25 +43,27 @@ public class EmployeeService {
         }
     }
 
-    public Employee findEmployee(String name, String surname, int department, double salary) {
-        Employee employee = new Employee(name, surname, department, salary);
-        if (!employees.contains(employee)) {
-            throw new EmployeeNotFoundException();
-        }
-        return employee;
+    public Employee findEmployee(String name,
+                                 String surname) {
+        return employees.stream()
+                .filter(emp -> emp.getName().equals(name) && emp.getSurname().equals(surname))
+                .findFirst()
+                .orElseThrow(EmployeeNotFoundException::new);
     }
 
 
-    public Employee removeEmployee(String name, String surname, int department, double salary) {
-        Employee employee = new Employee(name, surname, department, salary);
-        if (!employees.contains(employee)) {
-            throw new EmployeeNotFoundException();
-        }
+    public Employee removeEmployee(String name,
+                                   String surname) {
+        Employee employee = employees.stream()
+                .filter(emp -> emp.getName().equals(name) && emp.getSurname().equals(surname))
+                .findFirst()
+                .orElseThrow(EmployeeNotFoundException::new);
         employees.remove(employee);
-        throw new EmployeeNotFoundException();
+        return employee;
     }
 
     public List<Employee> getAll() {
         return new ArrayList<>(employees);
     }
+
 }
